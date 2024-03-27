@@ -13,6 +13,7 @@ import torch.optim as optim
 import random
 import numpy as np
 import os
+import pandas as pd
 
 
 seed = 3407
@@ -207,15 +208,27 @@ def gru_main(train_loader, test_loader, sequence_length):
 
 
 def main():
+    if not os.path.exists("./results"):
+        os.mkdir("./results")
+    
     train_loader, test_loader = MNIST_dataloader(32)
     mlp_training_loss, mlp_training_acc, mlp_test_acc = mlp_main(train_loader, test_loader)
+    mlp_results = {'training_loss': mlp_training_loss, 'training_acc': mlp_training_acc, 'test_acc': mlp_test_acc}
+    mlp_results = pd.DataFrame(mlp_results)
+    mlp_results.to_csv("./results/mlp_results.csv")
     
     train_loader, test_loader = CIFAR10_dataloader(128)
     vgg_training_loss, vgg_training_acc, vgg_test_acc = vgg_main(train_loader, test_loader)
+    vgg_results = {'training_loss': vgg_training_loss, 'training_acc': vgg_training_acc, 'test_acc': vgg_test_acc}
+    vgg_results = pd.DataFrame(vgg_results)
+    vgg_results.to_csv("./results/vgg_results.csv")
     
     sequence_length = 24
     train_loader, test_loader = airquality_dataloader(32, sequence_length)
     gru_training_loss, gru_test_loss = gru_main(train_loader, test_loader, sequence_length)
+    gru_results = {'training_loss': gru_training_loss, 'test_loss': gru_test_loss}
+    gru_results = pd.DataFrame(gru_results)
+    gru_results.to_csv("./results/gru_results.csv")
 
 
 if __name__ == '__main__':
